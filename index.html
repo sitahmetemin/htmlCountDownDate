@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalan süre</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet">
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+
+            color: #fff;
+            font-family: 'Comfortaa', cursive;
+            font-size: 2rem;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+
+            background-repeat: no-repeat;
+            background: #8A2387;
+            background: -webkit-linear-gradient(to right, #F27121, #E94057, #8A2387);
+            background: linear-gradient(to right, #F27121, #E94057, #8A2387);
+        }
+    </style>
+</head>
+
+<body>
+    <label for="">kalan süre:</label>
+    <div style="text-align: center;" id="countDownArea"></div>
+
+    <script>
+        let countDownAreaTag = document.getElementById('countDownArea');
+        let nowDate = new Date().toLocaleDateString();
+        let countDownStart;
+
+        let currentDate = new Date();
+        let cDay = currentDate.getDate();
+        let cMonth = ("0" + (currentDate.getMonth() + 1)).slice(-2);
+        let cYear = currentDate.getFullYear();
+        let cNow = `${cYear}-${cMonth}-${cDay}`;
+
+        async function fetch_demo() {
+            const resp = await fetch(`https://namaz-vakti.vercel.app/api/timesFromCoordinates?lat=41.01384&lng=28.94966&date=${cNow}&days=1&timezoneOffset=180`);
+
+            let respJson = await resp.json();
+
+            let times = Object.values(respJson.times)
+            let iftarTime = times[0][4];
+
+            countDownStart = `${cNow} ${iftarTime}`;
+
+            var countDownDate = new Date(countDownStart).getTime();
+
+            const timer = setInterval(function () {
+
+                var now = new Date().getTime();
+                var distance = countDownDate - now;
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                let timeString = `${hours}s ${minutes}dk ${seconds}sn`;
+                countDownAreaTag.innerHTML = timeString;
+                document.title = `${timeString} kaldı`;
+
+                if (distance < 0) {
+                    clearInterval(timer);
+                    countDownAreaTag.innerHTML = 'Süre Tamamlandı';
+                }
+            }, 1000);
+        }
+
+        fetch_demo();
+    </script>
+</body>
+
+</html>
